@@ -1,0 +1,131 @@
+
+
+### ✅ Step-by-Step: Set Up `json-server` for React
+
+#### 1. **Install `json-server`**
+
+You can install it globally or locally (recommended: local for project use).
+
+```bash
+npm install json-server --save-dev
+```
+
+Or globally:
+
+```bash
+npm install -g json-server
+```
+
+---
+
+#### 2. **Create a Fake Data File (e.g., `db.json`)**
+
+At your project root, create a file named `db.json`:
+
+```json
+{
+  "tutorials": [
+    { "id": 1, "title": "React Basics", "description": "Learn React fundamentals" },
+    { "id": 2, "title": "Hooks", "description": "Deep dive into hooks" }
+  ],
+  "users": [
+    { "id": 1, "name": "Alice" },
+    { "id": 2, "name": "Bob" }
+  ]
+}
+```
+
+You can structure it however you like.
+
+---
+
+#### 3. **Start the Fake API Server**
+
+```bash
+npx json-server --watch db.json --port 3001
+```
+
+* `--watch`: watches the file for changes
+* `--port`: default is 3000, but since React runs on 3000, use something else like `3001`
+
+---
+
+#### 4. **Fetch from React (Example with Axios or Fetch)**
+
+##### Using Axios:
+
+```bash
+npm install axios
+```
+
+```js
+import axios from 'axios';
+
+axios.get('http://localhost:3001/tutorials')
+  .then(response => {
+    console.log(response.data);
+  });
+```
+
+##### Using Fetch:
+
+```js
+useEffect(() => {
+  fetch('http://localhost:3001/tutorials')
+    .then(res => res.json())
+    .then(data => console.log(data));
+}, []);
+```
+
+---
+
+#### 5. **Handle CORS in Development**
+
+React dev server handles proxying automatically. To avoid CORS issues:
+
+**Add proxy to `package.json`** (in React app root):
+
+```json
+"proxy": "http://localhost:3001"
+```
+
+Then you can just do:
+
+```js
+fetch('/tutorials')
+```
+
+---
+
+### 💡 Extra Features
+
+* `POST`, `PUT`, `PATCH`, and `DELETE` are all supported automatically!
+* Add query support:
+
+  * `GET /tutorials?title=React`
+  * `GET /tutorials/1`
+* You can also create custom routes with `routes.json`
+
+---
+
+### 🚀 Optional: Run in Parallel with React
+
+In `package.json`:
+
+```json
+"scripts": {
+  "start": "react-scripts start",
+  "server": "json-server --watch db.json --port 3001",
+  "dev": "concurrently \"npm start\" \"npm run server\""
+}
+```
+
+```bash
+npm install concurrently --save-dev
+```
+
+Run both React and server:
+
+```bash
+npm run dev
+```

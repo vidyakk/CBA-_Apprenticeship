@@ -1,0 +1,66 @@
+same example without using `React.memo` and `useCallback`**, so you can clearly see how it behaves **without optimization**.
+
+---
+
+### ❌ Without `React.memo` and `useCallback`
+
+```jsx
+import React, { useState } from 'react';
+
+// 🧒 Child component (no memo)
+const Child = ({ onClick }) => {
+  console.log("👶 Child rendered");
+  return (
+    <div>
+      <h3>Child Component</h3>
+      <button onClick={onClick}>Call Parent Function</button>
+    </div>
+  );
+};
+
+function Parent() {
+  const [count, setCount] = useState(0);
+  const [clicks, setClicks] = useState(0);
+
+  // ⚠️ Not memoized — recreated on every render
+  const handleChildClick = () => {
+    setClicks(prev => prev + 1);
+  };
+
+  return (
+    <div>
+      <h2>Without React.memo & useCallback</h2>
+      <p>Parent Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Re-render Parent</button>
+
+      <p>Child Clicks: {clicks}</p>
+
+      {/* 🧒 Passing un-memoized function to normal child */}
+      <Child onClick={handleChildClick} />
+    </div>
+  );
+}
+
+export default Parent;
+```
+
+---
+
+### 🧠 Behavior
+
+* Every time **Parent re-renders**, the `handleChildClick` function is **recreated**.
+* That makes the `Child` component also **re-render**, even if its props seem “unchanged”.
+* You’ll see `👶 Child rendered` in the console **every time you click "Re-render Parent"**, which can hurt performance in large apps.
+
+---
+
+### 🔄 Summary
+
+| Feature       | With Optimization              | Without Optimization              |
+| ------------- | ------------------------------ | --------------------------------- |
+| `React.memo`  | Prevents child re-render       | Child re-renders every time       |
+| `useCallback` | Prevents prop reference change | New function created every render |
+
+---
+
+Let me know if you'd like a side-by-side demo or live comparison using CodeSandbox or a version with a large list for testing re-renders.

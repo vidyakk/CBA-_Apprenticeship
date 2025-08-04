@@ -1,0 +1,74 @@
+
+---
+
+## 🧠 What is `useMemo`?
+
+`useMemo` is a React Hook that **memoizes the result of a computation**, so it **only re-runs when dependencies change**. It's useful for **expensive calculations** or avoiding **unnecessary renders**.
+
+---
+
+## ✅ Basic Example
+
+### 🧮 Scenario: Expensive calculation (like squaring a number a million times)
+
+```jsx
+import React, { useState, useMemo } from 'react';
+
+function ExpensiveCalculator() {
+  const [count, setCount] = useState(0);
+  const [input, setInput] = useState(1);
+
+  // Expensive computation
+  const squaredNumber = useMemo(() => {
+    console.log('Calculating...');
+    let result = 0;
+    for (let i = 0; i < 100000000; i++) {
+      result = input * input;
+    }
+    return result;
+  }, [input]); // Only re-calculate when input changes
+
+  return (
+    <div>
+      <h2>useMemo Example</h2>
+      <input
+        type="number"
+        value={input}
+        onChange={(e) => setInput(Number(e.target.value))}
+      />
+      <p>Squared: {squaredNumber}</p>
+
+      <button onClick={() => setCount(count + 1)}>Re-render</button>
+      <p>Render count: {count}</p>
+    </div>
+  );
+}
+
+export default ExpensiveCalculator;
+```
+
+---
+
+## 🧪 What’s Happening?
+
+* When you type a number in the input, `squaredNumber` is **recalculated**.
+* When you click "Re-render", it **does not** re-run the expensive calculation (thanks to `useMemo`).
+* Without `useMemo`, the expensive loop would run **every time the component re-renders**, even when it's unnecessary.
+
+---
+
+## 🔄 Without `useMemo` (for comparison):
+
+```jsx
+const squaredNumber = () => {
+  let result = 0;
+  for (let i = 0; i < 100000000; i++) {
+    result = input * input;
+  }
+  return result;
+};
+```
+
+This would run **on every render**, even if `input` didn’t change.
+
+ `useMemo` used for optimizing **lists**, **filtering**, or **API data rendering**!

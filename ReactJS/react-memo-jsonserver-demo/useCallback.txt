@@ -1,0 +1,66 @@
+
+> ⚠️ `useCallback` does **not memoize the result** of a computation — it memoizes the **function**. So you'll still need to **call** the memoized function to get the result.
+
+---
+
+### ✅ Same Example using `useCallback`
+
+```jsx
+import React, { useState, useCallback } from 'react';
+
+function ExpensiveCalculator() {
+  const [count, setCount] = useState(0);
+  const [input, setInput] = useState(1);
+
+  // Memoized function (not result)
+  const calculateSquare = useCallback(() => {
+    console.log('Calculating...');
+    let result = 0;
+    for (let i = 0; i < 100000000; i++) {
+      result = input * input;
+    }
+    return result;
+  }, [input]);
+
+  const squaredNumber = calculateSquare(); // Function runs on every render
+
+  return (
+    <div>
+      <h2>useCallback Example</h2>
+      <input
+        type="number"
+        value={input}
+        onChange={(e) => setInput(Number(e.target.value))}
+      />
+      <p>Squared: {squaredNumber}</p>
+
+      <button onClick={() => setCount(count + 1)}>Re-render</button>
+      <p>Render count: {count}</p>
+    </div>
+  );
+}
+
+export default ExpensiveCalculator;
+```
+
+---
+
+### ⚠️ Key Difference in Behavior:
+
+* **`useMemo`** avoids re-running the expensive calculation unless the dependency changes.
+* **`useCallback`** just avoids re-creating the **function** — the function still runs unless you manually prevent it.
+
+So in your case, `useMemo` is the better choice to **cache the result** of the calculation.
+
+---
+
+### ✅ Bonus: Proper `useCallback` Use Case (with React.memo)
+
+If you want a true `useCallback`-style usage, pass the memoized function to a **child component** like this:
+
+```jsx
+const Child = React.memo(({ calculate }) => {
+  const result = calculate();
+  return <p>Squared in child: {result}</p>;
+});
+```
